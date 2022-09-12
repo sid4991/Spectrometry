@@ -34,7 +34,7 @@ for (i in (CropList)) {
       Soil_j <- dplyr::filter(Soil_08_18,Crop == j)
       names(Soil_j)[6] <- "RWC_Soil"
       TempSoil <- Soil_j
-      # TempSoilRes <- merge(TempCrop,TempSoil,by = c("Wvl"),all = T)
+    # TempSoilRes <- merge(TempCrop,TempSoil,by = c("Wvl"),all = T)
       TempSoilRes <- merge(TempCrop,TempSoil,by = c("Wvl","Scan"),all = T)
       LinearMix <- rbind(LinearMix,TempSoilRes)
 
