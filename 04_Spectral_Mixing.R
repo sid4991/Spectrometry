@@ -18,30 +18,48 @@
 ##
 ## ---------------------------
 
-conven <- 0.07 ##0-15% residue cover 7% mean
-med <- 0.22   ## 15-30 % residue cover 22% mean
-conser <- 0.65 ## 30-100 % residue cover 65% mean
+conven_lower <- 0.0 ## 0-15% residue cover
+conven_upper <- 0.10
+med_lower <- 0.17 ## 15-30 % residue cover 22% mean
+med_upper <- 0.25 ## 15-30 % residue cover 22% mean
+conser_lower <- 0.40 ## 30-100 % residue cover 65% mean
+conser_upper <- 1 ## 30-100 % residue cover 65% mean
 
-CropList <- unique(Residue_08_18$Crop)
-SoilList <- unique(Soil_08_18$Crop)
+CropList <- unique(Residue_Median$Crop)
+SoilList <- unique(Soil_Median$Crop)
 LinearMix <- data.frame()
 for (i in (CropList)) {
-  Cropi_i <- dplyr::filter(Residue_08_18,Crop == i)
+  Cropi_i <- dplyr::filter(Residue_Median, Crop == i)
   names(Cropi_i)[6] <- "RWC_Residue"
+  names(Cropi_i)[5] <- "Ref_Residue"
   TempCrop <- Cropi_i
-    for (j in (SoilList)) {
-      TempSoil <- data.frame()
-      Soil_j <- dplyr::filter(Soil_08_18,Crop == j)
-      names(Soil_j)[6] <- "RWC_Soil"
-      TempSoil <- Soil_j
+  for (j in (SoilList)) {
+    TempSoil <- data.frame()
+    Soil_j <- dplyr::filter(Soil_Median, Crop == j)
+    names(Soil_j)[6] <- "RWC_Soil"
+    names(Soil_j)[5] <- "Ref_Soil"
+    TempSoil <- Soil_j
     # TempSoilRes <- merge(TempCrop,TempSoil,by = c("Wvl"),all = T)
-      TempSoilRes <- merge(TempCrop,TempSoil,by = c("Wvl","Scan"),all = T)
-      LinearMix <- rbind(LinearMix,TempSoilRes)
-
+    TempSoilRes <- merge(TempCrop, TempSoil, by = c("Wvl", "Scan"), all = T)
+    LinearMix <- rbind(LinearMix, TempSoilRes)
   }
 }
 
-LinearMix$RWC_conven <- LinearMix$RWC_Soil*(1-conven) + LinearMix$RWC_Residue*(conven)
-LinearMix$RWC_med <- LinearMix$RWC_Soil*(1-med) + LinearMix$RWC_Residue*(med)
-LinearMix$RWC_conserv <- LinearMix$RWC_Soil*(1-conser) + LinearMix$RWC_Residue*(conser)
+LinearMix$RWC_conven_lower <- LinearMix$RWC_Soil * (1 - conven_lower) + LinearMix$RWC_Residue * (conven_lower)
+LinearMix$RWC_conven_upper <- LinearMix$RWC_Soil * (1 - conven_upper) + LinearMix$RWC_Residue * (conven_upper)
+LinearMix$RWC_med_lower <- LinearMix$RWC_Soil * (1 - med_lower) + LinearMix$RWC_Residue * (med_lower)
+LinearMix$RWC_med_upper <- LinearMix$RWC_Soil * (1 - med_upper) + LinearMix$RWC_Residue * (med_upper)
+LinearMix$RWC_conser_lower <- LinearMix$RWC_Soil * (1 - conser_lower) + LinearMix$RWC_Residue * (conser_lower)
+LinearMix$RWC_conser_upper <- LinearMix$RWC_Soil * (1 - conser_upper) + LinearMix$RWC_Residue * (conser_upper)
+
+LinearMix$Ref_conven_lower <- LinearMix$Ref_Soil * (1 - conven_lower) + LinearMix$Ref_Residue * (conven_lower)
+LinearMix$Ref_conven_upper <- LinearMix$Ref_Soil * (1 - conven_upper) + LinearMix$Ref_Residue * (conven_upper)
+LinearMix$Ref_med_lower <- LinearMix$Ref_Soil * (1 - med_lower) + LinearMix$Ref_Residue * (med_lower)
+LinearMix$Ref_med_upper <- LinearMix$Ref_Soil * (1 - med_upper) + LinearMix$Ref_Residue * (med_upper)
+LinearMix$Ref_conser_lower <- LinearMix$Ref_Soil * (1 - conser_lower) + LinearMix$Ref_Residue * (conser_lower)
+LinearMix$Ref_conser_upper <- LinearMix$Ref_Soil * (1 - conser_upper) + LinearMix$Ref_Residue * (conser_upper)
+
 LinearMix <- na.omit(LinearMix)
+
+write.csv(LinearMix, "LinearMix_onetomany.csv", row.names = F)
+write.csv(LinearMix, "LinearMix_onetoone.csv", row.names = F)

@@ -44,7 +44,7 @@ Residue$Wvl <- as.double(Residue$Wvl)
 
 ## Details about RWC for each scan
 CropMoisture <- read.csv("E:/WSU/Spectrometry/CropMoisture.csv")
-CropMoisture$RWC <- ifelse(CropMoisture$RWC>1,1,CropMoisture$RWC)
+CropMoisture$RWC <- ifelse(CropMoisture$RWC > 1, 1, CropMoisture$RWC)
 
 Residue <- merge(Residue, CropMoisture, by = c("Scan", "Crop"))
 
